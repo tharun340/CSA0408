@@ -1,0 +1,11 @@
+import os, stat
+
+file = "test.txt"
+with open(file, "w") as f:
+    f.write("sample")
+
+mode = os.stat(file).st_mode
+print("Owner permissions:", end=" ")
+print("r" if mode & stat.S_IRUSR else "-", end="")
+print("w" if mode & stat.S_IWUSR else "-", end="")
+print("x" if mode & stat.S_IXUSR else "-", end="\n")
