@@ -1,0 +1,17 @@
+def cscan(requests, head, size):
+    requests.sort()
+    seek, pos = 0, 0
+    while pos < len(requests) and requests[pos] < head:
+        pos += 1
+    for r in requests[pos:]:
+        seek += abs(r - head); head = r
+    seek += abs(size - 1 - head) + size - 1
+    head = 0
+    for r in requests[:pos]:
+        seek += abs(r - head); head = r
+    return seek
+
+req = list(map(int, input("Enter requests: ").split()))
+head = int(input("Enter initial head: "))
+size = int(input("Enter disk size: "))
+print("Total Seek Time =", cscan(req, head, size))
