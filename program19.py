@@ -1,25 +1,39 @@
 import threading
 import time
 
+# Shared resource
 shared_counter = 0
+
+# Mutex lock
 lock = threading.Lock()
 
-def increment(thread_id):
+def increment(name):
     global shared_counter
-    for _ in range(5):
-        with lock:  # Acquire lock
-            shared_counter += 1
-            print(f"Thread {thread_id} incremented counter to {shared_counter}")
-        time.sleep(1)
+    for i in range(5):
+        print(f"{name} trying to access shared resource...")
+        lock.acquire()  # Enter critical section
+        try:
+            print(f"{name} entered critical section.")
+            temp = shared_counter
+            time.sleep(0.5)  # Simulate work
+            shared_counter = temp + 1
+            print(f"{name} updated counter to {shared_counter}")
+        finally:
+            print(f"{name} leaving critical section.\n")
+            lock.release()  # Exit critical section
+        time.sleep(0.5)
 
-threads = []
+if __name__ == "__main__":
+    # Create threads
+    t1 = threading.Thread(target=increment, args=("Thread-1",))
+    t2 = threading.Thread(target=increment, args=("Thread-2",))
 
-for i in range(2):  # Two threads
-    t = threading.Thread(target=increment, args=(i+1,))
-    threads.append(t)
-    t.start()
+    # Start threads
+    t1.start()
+    t2.start()
 
-for t in threads:
-    t.join()
+    # Wait for completion
+    t1.join()
+    t2.join()
 
-print(f"Final value of counter: {shared_counter}")
+    print(f"Final counter value: {shared_counter}")
